@@ -34,7 +34,7 @@ class _GiphyPageState extends State<GiphyPage> {
 
     // final trendy = 'https://api.giphy.com/v1/gifs/trending?api_key=$apiKey&q=$query&limit=20&offset=0';
     
-// Error Handling:
+  // Error Handling:
 
   try {
     final response = await http.get(Uri.parse(url));
@@ -62,7 +62,7 @@ void _showSnackBar(String message) {
   ScaffoldMessenger.of(context).showSnackBar(snackBar);
 }
 
-// Auto Search
+// Auto-search
   void _onSearchChanged(String query) {
     if (_debounce?.isActive ?? false) _debounce!.cancel();
     _debounce = Timer(
@@ -77,7 +77,7 @@ void _showSnackBar(String message) {
     _debounce?.cancel();
     super.dispose();
   }
-// Ends autosearch
+// Ends auto-search
 
   @override
   Widget build(BuildContext context) {
@@ -85,11 +85,11 @@ void _showSnackBar(String message) {
       backgroundColor: const Color.fromARGB(255, 25, 25, 25),
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 25, 25, 25),
-        toolbarHeight: 40.0, // Adjust the height as needed
+        toolbarHeight: 40.0,
         flexibleSpace: Center(
           child: Padding(
             padding: const EdgeInsets.only(
-                top: 10), // Adjust padding
+                top: 10),
             child: Text(
               'Giphy Search App',
               style: TextStyle(
