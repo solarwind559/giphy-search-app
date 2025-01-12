@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:giphy_search/widgets/gif_grid.dart';
+import 'package:giphy_search/widgets/giphy_api.dart';
 import 'package:giphy_search/widgets/searchbar.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 import 'dart:async';
-
 
 class GiphyPage extends StatefulWidget {
   const GiphyPage({super.key});
@@ -12,154 +11,131 @@ class GiphyPage extends StatefulWidget {
   State<GiphyPage> createState() => _GiphyPageState();
 }
 
-class _GiphyPageState extends State<GiphyPage> {
+class _GiphyPageState extends State<GiphyPage> with SingleTickerProviderStateMixin {
+  final GiphyApi _giphyApi = GiphyApi();
+  List<dynamic> _trendingResults = [];
   List<dynamic> _searchResults = [];
-  String _searchQuery = '';
-
-  // Auto search
+  bool _isLoading = false;
   Timer? _debounce;
+  late TabController _tabController;
 
-
-  void _searchGifs(String query) async {
-    if (query.isEmpty) {
-      setState(() {
-        _searchResults.clear();
-      });
-      return;
-    }
-
-    final apiKey = 'pYstvToklKSFJk862BESFwzoMwXzcDND';
-    final url =
-        'https://api.giphy.com/v1/gifs/search?api_key=$apiKey&q=$query&limit=20&offset=0';
-
-    // final trendy = 'https://api.giphy.com/v1/gifs/trending?api_key=$apiKey&q=$query&limit=20&offset=0';
-    
-  // Error Handling:
-
-  try {
-    final response = await http.get(Uri.parse(url));
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      if (data['data'].isEmpty) {
-        // Empty search results?
-        _showSnackBar('No such GIFs found.');
-      } else {
-        setState(() {
-          _searchResults = data['data'];
-        });
-      }
-    } else {
-      _showSnackBar('Failed to fetch GIFs: ${response.statusCode}');
-    }
-  } catch (e) {
-    _showSnackBar('Failed to fetch GIFs: $e');
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+    _fetchTrendingGifs();
   }
-}
 
-// Snackbar is a widget provided by flutter to display a dismissible pop-up message on your application.
-void _showSnackBar(String message) {
-  final snackBar = SnackBar(content: Text(message));
-  ScaffoldMessenger.of(context).showSnackBar(snackBar);
-}
+  void _searchGifs(String query) {
+    if (_debounce?.isActive ?? false) _debounce!.cancel();
+    _debounce = Timer(const Duration(milliseconds: 500), () async {
+      setState(() {
+        _isLoading = true;
+      });
 
-// Auto-search
+      final results = await _giphyApi.searchGifs(context, query);
+      setState(() {
+        _searchResults = results;
+        _isLoading = false;
+      });
+    });
+  }
+
+  void _fetchTrendingGifs() async {
+    final results = await _giphyApi.fetchTrendingGifs(context);
+    setState(() {
+      _trendingResults = results;
+    });
+  }
+
   void _onSearchChanged(String query) {
     if (_debounce?.isActive ?? false) _debounce!.cancel();
-    _debounce = Timer(
-      const Duration(milliseconds: 500), () {
+    _debounce = Timer(const Duration(milliseconds: 500), () {
       _searchGifs(query);
-    }
-    );
+    });
   }
 
-   @override
+  @override
   void dispose() {
     _debounce?.cancel();
+    _tabController.dispose();
     super.dispose();
   }
-// Ends auto-search
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+  return Scaffold(
+    backgroundColor: const Color.fromARGB(255, 25, 25, 25),
+    appBar: AppBar(
       backgroundColor: const Color.fromARGB(255, 25, 25, 25),
-      appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 25, 25, 25),
-        toolbarHeight: 40.0,
-        flexibleSpace: Center(
-          child: Padding(
-            padding: const EdgeInsets.only(
-                top: 10),
-            child: Text(
-              'Giphy Search App',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
+      toolbarHeight: 40.0,
+      bottom: TabBar(
+        controller: _tabController,
+        indicator: BoxDecoration(),
+        tabs: [
+          Tab(text: 'Search GIFs'),
+          Tab(text: 'Trending'),
+        ],
+      ),
+      flexibleSpace: Center(
+        child: Padding(
+          padding: const EdgeInsets.only(bottom: 20),
+          child: Text(
+            'Giphy Search App',
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
             ),
           ),
         ),
       ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          NewSearchBar(
-            backgroundColor: const Color.fromARGB(255, 25, 25, 25),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Padding(
-                    padding:
-                        const EdgeInsets.all(10),
-                    child: TextField(
-                      style: TextStyle(color: Colors.white),
-                      
-                      // onChanged: (value) {
-                      //   _searchQuery = value;
-                      //   _searchGifs(_searchQuery);
-                      // },
-                      onChanged: _onSearchChanged,
-                      decoration: InputDecoration(
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                              color: const Color.fromARGB(255, 72, 72, 72)),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.deepPurple),
-                        ),
-                        labelText: "Have a gif in mind?",
-                        suffixIcon: Icon(
-                          Icons.search,
-                          color: Colors.white24,
+    ),
+    body: TabBarView(
+      controller: _tabController,
+      children: [
+        Column(
+          children: [
+            NewSearchBar(
+              backgroundColor: const Color.fromARGB(255, 25, 25, 25),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.all(10),
+                      child: TextField(
+                        style: TextStyle(color: Colors.white),
+                        onChanged: _onSearchChanged,
+                        decoration: InputDecoration(
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                                color: const Color.fromARGB(255, 72, 72, 72)),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.deepPurple),
+                          ),
+                          labelText: "Have a gif in mind?",
+                          suffixIcon: Icon(
+                            Icons.search,
+                            color: Colors.white24,
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
-              ],
-            ),
-          ),
-          
-          // Grid view
-          Expanded(
-            child: GridView.builder(
-              itemCount: _searchResults.length,
-              padding: const EdgeInsets.all(10),
-              itemBuilder: (context, index) {
-                return Image.network(
-                  _searchResults[index]['images']['original']['url'],
-                );
-              },
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                mainAxisSpacing: 5,
-                crossAxisSpacing: 5,
-                crossAxisCount: 2,
+                ],
               ),
             ),
-          ),
-        ],
-      ),
-    );
-  }
+            Expanded(
+              child: _isLoading
+                  ? Center(child: CircularProgressIndicator())
+                  : GifGrid(searchResults: _searchResults),
+            ),
+          ],
+        ),
+        GifGrid(searchResults: _trendingResults), // Moved the trending GIFs to the second position
+      ],
+    ),
+  );
+}
 }
