@@ -3,15 +3,17 @@ Technical
 + Auto search - requests to retrieve Gif information from the service are made automatically with a small delay after user stops typing;
 + Pagination - loading more results when scrolling;
 + Vertical & horizontal orientation support; // OrientationBuilder
-? Error handling;
++ Error handling;
 - Unit tests - as much as you see fit;
 
 UI
 + Responsive & matching platform guidelines;
-? At least 2 views sourced by data from Giphy; // make "trending" view and the "search" view 
++ At least 2 views sourced by data from Giphy; // "trending" view and the "search" TabBar view 
 + Results are displayed in a grid;
-- Clicking on a grid item should navigate to a detailed Gif view.
-- Loading indicators; // CircularProgressIndicator, in the center of app screen,  FadeInImage widget
++ Clicking on a grid item should navigate to a detailed Gif view. // GifDetailView widget
++ Loading indicators; // CircularProgressIndicator, in the center of app screen,  FadeInImage widget... 
+(The best time to catch the loading indicator is when the app is failing to fetch gifs,
+if there is no internet access)
 + Error display; // SnackBar messages widget
 
 Bonus points:

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:giphy_search/screens/gif_detail_view.dart';
 
 class GifGrid extends StatelessWidget {
   final List<dynamic> searchResults;
@@ -10,13 +11,25 @@ class GifGrid extends StatelessWidget {
     Orientation orientation = MediaQuery.of(context).orientation;
     return GridView.builder(
       itemCount: searchResults.length,
-      padding: const EdgeInsets.all(10),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
       itemBuilder: (context, index) {
-        return Container(
-          color: Color.fromARGB(255, 50, 50, 50),
-          child: Image.network(
-            searchResults[index]['images']['original']['url'],
-            fit: BoxFit.cover,
+        return GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => GifDetailView(
+                  gifUrl: searchResults[index]['images']['original']['url'],
+                ),
+              ),
+            );
+          },
+          child: Container(
+            color: Color.fromARGB(255, 50, 50, 50),
+            child: Image.network(
+              searchResults[index]['images']['original']['url'],
+              fit: BoxFit.cover,
+            ),
           ),
         );
       },
