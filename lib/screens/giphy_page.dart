@@ -143,16 +143,15 @@ class _GiphyPageState extends State<GiphyPage>
                           decoration: InputDecoration(
                             enabledBorder: OutlineInputBorder(
                               borderSide: BorderSide(
-                                  color: Colors.white38),
+                                  color: Colors.white24),
                             ),
                             focusedBorder: OutlineInputBorder(
                               borderSide: BorderSide(color: Colors.deepPurpleAccent),
                             ),
                             labelText: "Have a gif in mind?",
-                            labelStyle: TextStyle(color: Colors.deepPurpleAccent),
                             suffixIcon: Icon(
                               Icons.search,
-                              color: Colors.white38,
+                              color: Colors.white24,
                             ),
                           ),
                         ),
