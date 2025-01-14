@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:async';
+import 'dart:io' show Platform;
 
 class GiphyApi {
-  final String apiKey = 'pYstvToklKSFJk862BESFwzoMwXzcDND';
-
+  final String apiKey = getGiphyApiKey();
   // Search
   Future<List<dynamic>> searchGifs(BuildContext context, String query) async {
     if (query.isEmpty) return [];
@@ -51,4 +51,15 @@ class GiphyApi {
 void _showSnackBar(BuildContext context, String message) {
   final snackBar = SnackBar(content: Text(message));
   ScaffoldMessenger.of(context).showSnackBar(snackBar);
+}
+
+// Handle... different API keys for .... ios and Android, as per documentation.
+String getGiphyApiKey() {
+  if (Platform.isIOS) {
+    return 'hLxfYj0tslzlDjIUNmJqSLggjra8nigd';
+  } else if (Platform.isAndroid) {
+    return 'pYstvToklKSFJk862BESFwzoMwXzcDND';
+  } else {
+    return 'pYstvToklKSFJk862BESFwzoMwXzcDND';
+  }
 }

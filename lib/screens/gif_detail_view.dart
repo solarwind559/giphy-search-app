@@ -11,7 +11,7 @@ class GifDetailView extends StatelessWidget {
       backgroundColor: const Color.fromARGB(255, 25, 25, 25),
       appBar: AppBar(
         iconTheme: IconThemeData(
-          color: Colors.white, // Color of the back button and other icons
+          color: Colors.white,
         ),
         title: Text(
           'GIF info',
@@ -27,7 +27,7 @@ class GifDetailView extends StatelessWidget {
             Image.network(gifUrl),
             Column(
               children: [
-                SizedBox(height: 8.0), // Adjust the height as needed
+                SizedBox(height: 8.0),
                 Text(
                   'Copy URL:',
                   style: TextStyle(

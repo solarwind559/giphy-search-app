@@ -1,5 +1,5 @@
 Technical
-- Primary platforms - iOS & Android;
+- Primary platforms - iOS & Android; // Different api keys for ios and android.... and implemented CupertinoApp for ios and MaterialApp for android.
 + Auto search - requests to retrieve Gif information from the service are made automatically with a small delay after user stops typing;
 + Pagination - loading more results when scrolling;
 + Vertical & horizontal orientation support; // OrientationBuilder

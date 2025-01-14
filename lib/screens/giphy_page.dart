@@ -72,15 +72,29 @@ class _GiphyPageState extends State<GiphyPage>
         toolbarHeight: 60.0,
         bottom: PreferredSize(
           preferredSize: Size.fromHeight(64.0),
-          child: Column(
+          child: Column(                
             children: [
-              TabBar(
-                controller: _tabController,
-                indicatorSize: TabBarIndicatorSize.tab,
-                tabs: [
-                  Tab(text: 'Search GIFs'),
-                  Tab(text: 'Trending'),
-                ],
+              Container(
+              color: const Color.fromARGB(255, 25, 25, 25),
+                child: TabBar(
+                  controller: _tabController,
+                  indicatorSize: TabBarIndicatorSize.tab,
+                  tabs: [
+                    Tab(
+                      child: Text(
+                        'Search GIFs',
+                          style: TextStyle(fontSize: 18),
+                        ),
+                    ),
+
+                    Tab(                      
+                      child: Text(
+                        'Trending GIFs',
+                          style: TextStyle(fontSize: 18),
+                        ),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
@@ -91,12 +105,9 @@ class _GiphyPageState extends State<GiphyPage>
             child: ShaderMask(
               shaderCallback: (bounds) => LinearGradient(
                 colors: <Color>[
-                  Colors.red,
-                  Colors.orange,
                   Colors.yellow,
                   Colors.green,
                   Colors.blue,
-                  Colors.indigo,
                   Colors.purple,
                 ],
                 tileMode: TileMode.mirror,
@@ -104,7 +115,7 @@ class _GiphyPageState extends State<GiphyPage>
               child: Text(
                 'Giphy Search App',
                 style: TextStyle(
-                  fontSize: 24,
+                  fontSize: 26,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
                 ),
@@ -132,15 +143,16 @@ class _GiphyPageState extends State<GiphyPage>
                           decoration: InputDecoration(
                             enabledBorder: OutlineInputBorder(
                               borderSide: BorderSide(
-                                  color: const Color.fromARGB(255, 72, 72, 72)),
+                                  color: Colors.white38),
                             ),
                             focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.deepPurple),
+                              borderSide: BorderSide(color: Colors.deepPurpleAccent),
                             ),
                             labelText: "Have a gif in mind?",
+                            labelStyle: TextStyle(color: Colors.deepPurpleAccent),
                             suffixIcon: Icon(
                               Icons.search,
-                              color: Colors.white24,
+                              color: Colors.white38,
                             ),
                           ),
                         ),

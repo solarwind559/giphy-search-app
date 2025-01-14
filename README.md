@@ -1,6 +1,6 @@
 # giphy_search
 
-A new Flutter project.
+Flutter version 3.27.1
 
 ## Getting Started
 
