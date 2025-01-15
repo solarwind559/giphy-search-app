@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:giphy_search/widgets/gif_grid.dart';
-import 'package:giphy_search/widgets/giphy_api.dart';
+import 'package:giphy_search/giphy_api/giphy_api.dart';
 import 'package:giphy_search/widgets/searchbar.dart';
 import 'dart:async';
 
@@ -43,9 +43,13 @@ class _GiphyPageState extends State<GiphyPage>
   }
 
   void _fetchTrendingGifs() async {
+    setState(() {
+    _isLoading = true; // include loading for the wait while fetching GIFs too...
+    });
     final results = await _giphyApi.fetchTrendingGifs(context);
     setState(() {
       _trendingResults = results;
+      _isLoading = false; // include loading for the wait while fetching GIFs too...
     });
   }
 
@@ -135,8 +139,8 @@ class _GiphyPageState extends State<GiphyPage>
                   children: [
                     Expanded(
                       child: Padding(
-                        padding: const EdgeInsets.only(
-                            top: 15, bottom: 0, left: 10, right: 10),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 15, horizontal: 10),
                         child: TextField(
                           style: TextStyle(color: Colors.white),
                           onChanged: _onSearchChanged,
@@ -146,7 +150,7 @@ class _GiphyPageState extends State<GiphyPage>
                                   color: Colors.white24),
                             ),
                             focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.deepPurpleAccent),
+                              borderSide: BorderSide(color: Colors.deepPurple),
                             ),
                             labelText: "Have a gif in mind?",
                             suffixIcon: Icon(
