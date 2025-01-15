@@ -11,7 +11,7 @@ class GifGrid extends StatelessWidget {
     Orientation orientation = MediaQuery.of(context).orientation;
     return GridView.builder(
       itemCount: searchResults.length,
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
+      padding: const EdgeInsets.only(left: 10, right: 10, bottom: 15),
       itemBuilder: (context, index) {
         return GestureDetector(
           onTap: () {
