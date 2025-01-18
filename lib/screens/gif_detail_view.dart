@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:giphy_search/widgets/custom_appbar.dart';
 
 class GifDetailView extends StatelessWidget {
   final String gifUrl;
@@ -9,21 +10,16 @@ class GifDetailView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 25, 25, 25),
-      appBar: AppBar(
+      appBar: CustomAppBar(
         iconTheme: IconThemeData(
           color: Colors.white,
         ),
-        title: Text(
-          'GIF info',
-          style: TextStyle(color: Colors.white),
-          textAlign: TextAlign.center,
-        ),
-        backgroundColor: const Color.fromARGB(255, 25, 25, 25),
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            (Text('Gif info')),
             Image.network(gifUrl),
             Column(
               children: [

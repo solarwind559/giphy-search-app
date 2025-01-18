@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:giphy_search/widgets/custom_appbar.dart';
 import 'package:giphy_search/widgets/gif_grid.dart';
 import 'package:giphy_search/giphy_api/giphy_api.dart';
 import 'package:giphy_search/widgets/searchbar.dart';
@@ -73,112 +74,87 @@ class _GiphyPageState extends State<GiphyPage>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 25, 25, 25),
-      appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 15, 15, 15),
-        toolbarHeight: 60.0,
-        bottom: PreferredSize(
-          preferredSize: Size.fromHeight(64.0),
-          child: Column(
-            children: [
-              Container(
-                color: const Color.fromARGB(255, 25, 25, 25),
-                child: TabBar(
-                  controller: _tabController,
-                  indicatorSize: TabBarIndicatorSize.tab,
-                  tabs: [
-                    Tab(
-                      child: Text(
-                        'Search GIFs',
-                        style: TextStyle(fontSize: 18),
-                      ),
-                    ),
-                    Tab(
-                      child: Text(
-                        'Trending GIFs',
-                        style: TextStyle(fontSize: 18),
-                      ),
-                    ),
-                  ],
+  return Scaffold(
+    backgroundColor: const Color.fromARGB(255, 25, 25, 25),
+    appBar: CustomAppBar(
+      iconTheme: IconThemeData(
+          color: Colors.white,
+        ),
+      ),
+    body: Column(
+      children: [
+        Container(
+          color: const Color.fromARGB(255, 25, 25, 25),
+          child: TabBar(
+            controller: _tabController,
+            indicatorSize: TabBarIndicatorSize.tab,
+            tabs: const [
+              Tab(
+                child: Text(
+                  'Search GIFs',
+                  style: TextStyle(fontSize: 18),
+                ),
+              ),
+              Tab(
+                child: Text(
+                  'Trending GIFs',
+                  style: TextStyle(fontSize: 18),
                 ),
               ),
             ],
           ),
         ),
-        flexibleSpace: Center(
-          child: Padding(
-            padding: const EdgeInsets.only(bottom: 30),
-            child: ShaderMask(
-              shaderCallback: (bounds) => LinearGradient(
-                colors: <Color>[
-                  Colors.yellow,
-                  Colors.green,
-                  Colors.blue,
-                  Colors.purple,
-                ],
-                tileMode: TileMode.mirror,
-              ).createShader(bounds),
-              child: Text(
-                'Giphy Search App',
-                style: TextStyle(
-                  fontSize: 26,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-      body: TabBarView(
-        controller: _tabController,
-        children: [
-          Column(
+        Expanded(
+          child: TabBarView(
+            controller: _tabController,
             children: [
-              NewSearchBar(
-                backgroundColor: const Color.fromARGB(255, 25, 25, 25),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 15, horizontal: 10),
-                        child: TextField(
-                          style: const TextStyle(color: Colors.white),
-                          onChanged: _onSearchChanged,
-                          decoration: const InputDecoration(
-                            enabledBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.white24),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.deepPurple),
-                            ),
-                            labelText: "Have a gif in mind?",
-                            suffixIcon: Icon(
-                              Icons.search,
-                              color: Colors.white24,
+              Column(
+                children: [
+                  NewSearchBar(
+                    backgroundColor: const Color.fromARGB(255, 25, 25, 25),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
+                            child: TextField(
+                              style: const TextStyle(color: Colors.white),
+                              onChanged: _onSearchChanged,
+                              decoration: const InputDecoration(
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.white24),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.deepPurple),
+                                ),
+                                labelText: "Have a gif in mind?",
+                                suffixIcon: Icon(
+                                  Icons.search,
+                                  color: Colors.white24,
+                                ),
+                              ),
                             ),
                           ),
                         ),
-                      ),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                  Expanded(
+                    child: _isLoading
+                        ? const Center(child: CircularProgressIndicator())
+                        : GifGrid(searchResults: _searchResults),
+                  ),
+                ],
               ),
-              Expanded(
-                child: _isLoading
-                    ? const Center(child: CircularProgressIndicator())
-                    : GifGrid(searchResults: _searchResults),
+              Padding(
+                padding: const EdgeInsets.only(top: 15), // Applies conditionally, only on Trending GIFs tab view
+                child: GifGrid(searchResults: _trendingResults),
               ),
             ],
           ),
-          Padding(
-            padding: const EdgeInsets.only(top: 15), // Applies conditionally, only on Trending GIFs tab view
-            child: GifGrid(searchResults: _trendingResults),
-          ),
-        ],
-      ),
-    );
-  }
+        ),
+      ],
+    ),
+  );
 }
+    }
