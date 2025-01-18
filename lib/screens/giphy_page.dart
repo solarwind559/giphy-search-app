@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:giphy_search/widgets/gif_grid.dart';
 import 'package:giphy_search/giphy_api/giphy_api.dart';
 import 'package:giphy_search/widgets/searchbar.dart';
+import 'package:http/http.dart' as http;
 import 'dart:async';
 
 class GiphyPage extends StatefulWidget {
@@ -13,7 +14,7 @@ class GiphyPage extends StatefulWidget {
 
 class _GiphyPageState extends State<GiphyPage>
     with SingleTickerProviderStateMixin {
-  final GiphyApi _giphyApi = GiphyApi();
+  final GiphyApi _giphyApi = GiphyApi(apiClient: http.Client());
   List<dynamic> _trendingResults = [];
   List<dynamic> _searchResults = [];
   bool _isLoading = false;
@@ -24,6 +25,9 @@ class _GiphyPageState extends State<GiphyPage>
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    _tabController.addListener(() {
+      setState(() {});
+    });
     _fetchTrendingGifs();
   }
 
@@ -44,12 +48,12 @@ class _GiphyPageState extends State<GiphyPage>
 
   void _fetchTrendingGifs() async {
     setState(() {
-    _isLoading = true; // include loading for the wait while fetching GIFs too...
+      _isLoading = true;
     });
     final results = await _giphyApi.fetchTrendingGifs(context);
     setState(() {
       _trendingResults = results;
-      _isLoading = false; // include loading for the wait while fetching GIFs too...
+      _isLoading = false;
     });
   }
 
@@ -76,10 +80,10 @@ class _GiphyPageState extends State<GiphyPage>
         toolbarHeight: 60.0,
         bottom: PreferredSize(
           preferredSize: Size.fromHeight(64.0),
-          child: Column(                
+          child: Column(
             children: [
               Container(
-              color: const Color.fromARGB(255, 25, 25, 25),
+                color: const Color.fromARGB(255, 25, 25, 25),
                 child: TabBar(
                   controller: _tabController,
                   indicatorSize: TabBarIndicatorSize.tab,
@@ -87,15 +91,14 @@ class _GiphyPageState extends State<GiphyPage>
                     Tab(
                       child: Text(
                         'Search GIFs',
-                          style: TextStyle(fontSize: 18),
-                        ),
+                        style: TextStyle(fontSize: 18),
+                      ),
                     ),
-
-                    Tab(                      
+                    Tab(
                       child: Text(
                         'Trending GIFs',
-                          style: TextStyle(fontSize: 18),
-                        ),
+                        style: TextStyle(fontSize: 18),
+                      ),
                     ),
                   ],
                 ),
@@ -142,12 +145,11 @@ class _GiphyPageState extends State<GiphyPage>
                         padding: const EdgeInsets.symmetric(
                             vertical: 15, horizontal: 10),
                         child: TextField(
-                          style: TextStyle(color: Colors.white),
+                          style: const TextStyle(color: Colors.white),
                           onChanged: _onSearchChanged,
-                          decoration: InputDecoration(
+                          decoration: const InputDecoration(
                             enabledBorder: OutlineInputBorder(
-                              borderSide: BorderSide(
-                                  color: Colors.white24),
+                              borderSide: BorderSide(color: Colors.white24),
                             ),
                             focusedBorder: OutlineInputBorder(
                               borderSide: BorderSide(color: Colors.deepPurple),
@@ -166,12 +168,15 @@ class _GiphyPageState extends State<GiphyPage>
               ),
               Expanded(
                 child: _isLoading
-                    ? Center(child: CircularProgressIndicator())
+                    ? const Center(child: CircularProgressIndicator())
                     : GifGrid(searchResults: _searchResults),
               ),
             ],
           ),
-          GifGrid(searchResults: _trendingResults),
+          Padding(
+            padding: const EdgeInsets.only(top: 15), // Applies conditionally, only on Trending GIFs tab view
+            child: GifGrid(searchResults: _trendingResults),
+          ),
         ],
       ),
     );
