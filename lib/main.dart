@@ -14,10 +14,12 @@ class MyApp extends StatelessWidget {
         ? CupertinoApp(
             title: 'Flutter Demo',
             home: GiphyPage(),
+            debugShowCheckedModeBanner: false,
           )
         : MaterialApp(
             title: 'Flutter Demo',
             home: GiphyPage(),
+            debugShowCheckedModeBanner: false,
           );
   }
 }
