@@ -2,6 +2,10 @@
 
 ### Flutter version 3.27.1
 
+![Search](assets/screenshots/search.png) 
+![Trending](assets/screenshots/trending.png)
+![Detail](assets/screenshots/detail_view.png) 
+
 ## Getting Started
 
 This project is a starting point for a Flutter application.
