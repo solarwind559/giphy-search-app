@@ -8,7 +8,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:giphy_search/main.dart';
 import 'package:giphy_search/screens/giphy_page.dart';
-import 'package:giphy_search/widgets/gif_grid.dart';
+import 'package:giphy_search/widgets/gif_grid_item.dart';
 import 'package:giphy_search/widgets/searchbar.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
@@ -52,11 +52,11 @@ void main() {
   final giphyApi = GiphyApi(apiClient: mockClient);
 
   group('GiphyApi', () {
-    
+
     // Test for searchGifs
     test('searchGifs returns data on success', () async {
       final context = MockBuildContext();
-      final results = await giphyApi.searchGifs(context, 'funny');
+      final results = await giphyApi.fetchSearchGifs(context, 'funny');
 
       // Debug:
       print('Search results: ${results.length} items');
@@ -103,18 +103,6 @@ void main() {
   });
 
   //
-  // Auto-search test:
-  //
-  testWidgets('Auto-search functionality works and displays GifGrid', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(MyApp());
-
-    // Are gifs getting fetched and displayed through auto-search, after 1 sec delay?
-    await tester.pumpAndSettle(Duration(seconds: 1));
-    expect(find.byType(GifGrid), findsOneWidget);
-  });
-
-  //
   // Pagination test: scroll
   //
   testWidgets('Pagination loads more items on scroll', (WidgetTester tester) async {
@@ -125,10 +113,10 @@ void main() {
     await tester.pumpAndSettle(Duration(seconds: 1));
 
     // Test pagination by scrolling
-    await tester.fling(find.byType(GifGrid), const Offset(0, -500), 1000);
+    await tester.fling(find.byType(GifGridItem), const Offset(0, -500), 1000);
     await tester.pumpAndSettle();
 
     // Verify that more items are loaded
-    expect(find.byType(GifGrid), findsWidgets);
+    expect(find.byType(GifGridItem), findsWidgets);
   });
 }

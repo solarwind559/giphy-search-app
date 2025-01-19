@@ -9,54 +9,41 @@ class GiphyApi {
   final http.Client apiClient;
   GiphyApi({required this.apiClient});
 
-  // Search
-  Future<List<dynamic>> searchGifs(BuildContext context, String query) async {
+  // Search GIFs with Pagination
+  Future<List<dynamic>> fetchSearchGifs(BuildContext context, String query, {int offset = 0, int limit = 20}) async {
     if (query.isEmpty) return [];
 
-    final url = 'https://api.giphy.com/v1/gifs/search?api_key=$apiKey&q=$query&limit=20&offset=0';
-    print('Fetching GIFs URL: $url');
+    final url = 'https://api.giphy.com/v1/gifs/search?api_key=$apiKey&q=$query&limit=$limit&offset=$offset';
+    return await _fetchGifs(context, url);
+  }
 
+  // Fetch Trending GIFs with Pagination
+  Future<List<dynamic>> fetchTrendingGifs(BuildContext context, {int offset = 0, int limit = 20}) async {
+    final url = 'https://api.giphy.com/v1/gifs/trending?api_key=$apiKey&limit=$limit&offset=$offset';
+    return await _fetchGifs(context, url);
+  }
+
+  // Private method to handle HTTP requests and error handling
+  Future<List<dynamic>> _fetchGifs(BuildContext context, String url) async {
     try {
       final response = await apiClient.get(Uri.parse(url));
-      print('Response status: ${response.statusCode}');
-      print('Response body: ${response.body}');
-      
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        return data['data'];
+        if (data['data'] != null) {
+          return data['data'];
+        } else {
+          print('Unexpected response structure: ${response.body}');
+          _showSnackBar(context, 'Unexpected response structure');
+          return [];
+        }
       } else {
-        print('Failed to fetch GIFs: ${response.statusCode}'); // Add detailed error information
+        print('Failed to fetch GIFs: ${response.statusCode}');
         _showSnackBar(context, 'Failed to fetch GIFs: ${response.statusCode}');
         return [];
       }
     } catch (e) {
-      print('Exception: $e'); // Add detailed exception information
-      _showSnackBar(context, 'Failed to fetch GIFs: $e');
-      return [];
-    }
-  }
-
-  // Trending
-  Future<List<dynamic>> fetchTrendingGifs(BuildContext context) async {
-    final url = 'https://api.giphy.com/v1/gifs/trending?api_key=$apiKey&limit=20&offset=0';
-    print('Fetching Trending GIFs URL: $url');
-
-    try {
-      final response = await apiClient.get(Uri.parse(url));
-      print('Response status: ${response.statusCode}');
-      print('Response body: ${response.body}');
-      
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        return data['data'];
-      } else {
-        print('Failed to fetch trending GIFs: ${response.statusCode}');
-        _showSnackBar(context, 'Failed to fetch trending GIFs: ${response.statusCode}');
-        return [];
-      }
-    } catch (e) {
       print('Exception: $e');
-      _showSnackBar(context, 'Failed to fetch trending GIFs: $e');
+      _showSnackBar(context, 'Failed to fetch GIFs: $e');
       return [];
     }
   }
