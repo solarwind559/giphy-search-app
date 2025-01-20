@@ -3,8 +3,9 @@ import 'package:giphy_search/widgets/custom_appbar.dart';
 
 class GifDetailView extends StatelessWidget {
   final String gifUrl;
+  final String gifTitle;
 
-  const GifDetailView({required this.gifUrl, Key? key}) : super(key: key);
+  const GifDetailView({required this.gifTitle, required this.gifUrl, Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -19,11 +20,21 @@ class GifDetailView extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            (Text('Gif info')),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 20),
+              child: Text( 
+                gifTitle, 
+                style: TextStyle( 
+                  color: Colors.white, 
+                  fontSize: 20, 
+                  fontWeight: FontWeight.bold, 
+                  ), 
+                ),
+            ),
             Image.network(gifUrl),
             Column(
               children: [
-                SizedBox(height: 8.0),
+                SizedBox(height: 20),
                 Text(
                   'Copy URL:',
                   style: TextStyle(
@@ -33,7 +44,7 @@ class GifDetailView extends StatelessWidget {
               ],
             ),
             Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
                 child: Column(
                   children: [
                     Container(

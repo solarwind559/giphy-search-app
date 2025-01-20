@@ -38,6 +38,7 @@ dependencies:
   flutter_driver:
     sdk: flutter
   infinite_scroll_pagination: ^4.1.0
+  # connectivity_plus: ^6.1.2
 
 dev_dependencies:
   flutter_test:

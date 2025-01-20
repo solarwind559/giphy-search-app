@@ -13,7 +13,7 @@ class GifGridItem extends StatelessWidget {
           context,
           MaterialPageRoute(
             builder: (context) => GifDetailView(
-              gifUrl: gifData['images']['original']['url'],
+              gifUrl: gifData['images']['original']['url'], gifTitle: gifData['title'],
             ),
           ),
         );
