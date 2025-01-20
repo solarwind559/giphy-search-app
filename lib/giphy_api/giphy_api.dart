@@ -35,16 +35,18 @@ class GiphyApi {
         // If successful
         final data = json.decode(response.body);
         if (data['data'] != null) {
+          // If search keyword doesn't match any data
           if (data['data'].isEmpty) {
             _showSnackBar(context, 'No GIFs found');
             return [];
           }
           return data['data'];
+        // Exception, if data is null
         } else {
           _showSnackBar(context, 'Problem showing GIFs');
           return [];
         }
-      // Exceptions
+      // Exception, unsuccesful response
       } else {
         _showSnackBar(context, 'Failed to fetch GIFs: ${response.statusCode}');
         return [];
