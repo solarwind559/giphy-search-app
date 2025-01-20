@@ -14,13 +14,16 @@ class GiphyPage extends StatefulWidget {
   State<GiphyPage> createState() => _GiphyPageState();
 }
 
-class _GiphyPageState extends State<GiphyPage> with SingleTickerProviderStateMixin {
+class _GiphyPageState extends State<GiphyPage>
+  with SingleTickerProviderStateMixin {
   final GiphyApi _giphyApi = GiphyApi(apiClient: http.Client());
   static const _pageSize = 20;
   final PagingController<int, dynamic> _pagingControllerTrending = PagingController(firstPageKey: 0);
   final PagingController<int, dynamic> _pagingControllerSearch = PagingController(firstPageKey: 0);
   late TabController _tabController;
   String _currentSearchQuery = "";
+  // Add delay on auto-search
+  Timer? _debounce;
 
   @override
   void initState() {
@@ -36,7 +39,8 @@ class _GiphyPageState extends State<GiphyPage> with SingleTickerProviderStateMix
 
   Future<void> _fetchSearchGifs(String query, int pageKey) async {
     try {
-      final newItems = await _giphyApi.fetchSearchGifs(context, query, offset: pageKey, limit: _pageSize);
+      final newItems = await _giphyApi.fetchSearchGifs(context, query,
+          offset: pageKey, limit: _pageSize);
       final isLastPage = newItems.length < _pageSize;
       if (isLastPage) {
         _pagingControllerSearch.appendLastPage(newItems);
@@ -51,7 +55,8 @@ class _GiphyPageState extends State<GiphyPage> with SingleTickerProviderStateMix
 
   Future<void> _fetchTrendingGifs(int pageKey) async {
     try {
-      final newItems = await _giphyApi.fetchTrendingGifs(context, offset: pageKey, limit: _pageSize);
+      final newItems = await _giphyApi.fetchTrendingGifs(context,
+          offset: pageKey, limit: _pageSize);
       final isLastPage = newItems.length < _pageSize;
       if (isLastPage) {
         _pagingControllerTrending.appendLastPage(newItems);
@@ -65,8 +70,11 @@ class _GiphyPageState extends State<GiphyPage> with SingleTickerProviderStateMix
   }
 
   void _onSearchChanged(String query) {
+    if (_debounce?.isActive ?? false) _debounce?.cancel();
+    _debounce = Timer(const Duration(seconds: 1), () {
     _currentSearchQuery = query;
     _pagingControllerSearch.refresh();
+    });
   }
 
   @override
@@ -74,6 +82,7 @@ class _GiphyPageState extends State<GiphyPage> with SingleTickerProviderStateMix
     _pagingControllerTrending.dispose();
     _pagingControllerSearch.dispose();
     _tabController.dispose();
+    _debounce?.cancel();
     super.dispose();
   }
 
@@ -118,46 +127,28 @@ class _GiphyPageState extends State<GiphyPage> with SingleTickerProviderStateMix
                     Column(
                       children: [
                         NewSearchBar(
-                          backgroundColor: const Color.fromARGB(255, 25, 25, 25),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
-                                  child: TextField(
-                                    style: const TextStyle(color: Colors.white),
-                                    onChanged: _onSearchChanged,
-                                    decoration: const InputDecoration(
-                                      enabledBorder: OutlineInputBorder(
-                                        borderSide: BorderSide(color: Colors.white24),
-                                      ),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderSide: BorderSide(color: Colors.deepPurple),
-                                      ),
-                                      labelText: "Have a gif in mind?",
-                                      suffixIcon: Icon(
-                                        Icons.search,
-                                        color: Colors.white24,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
+                          onChanged: (text) {
+                            _onSearchChanged(text);
+                          },
+                          backgroundColor:
+                            const Color.fromARGB(255, 25, 25, 25),
                           ),
-                        ),
                         Expanded(
                           child: Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 5),
                             child: PagedGridView<int, dynamic>(
                               pagingController: _pagingControllerSearch,
-                              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: orientation == Orientation.portrait ? 2 : 4,
+                              gridDelegate:
+                                  SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount:
+                                    orientation == Orientation.portrait ? 2 : 4,
                                 childAspectRatio: 1,
                               ),
-                              builderDelegate: PagedChildBuilderDelegate<dynamic>(
+                              builderDelegate:
+                                  PagedChildBuilderDelegate<dynamic>(
                                 itemBuilder: (context, item, index) => Padding(
-                                  padding: const EdgeInsets.only(right:5, left:5, bottom:10),
+                                  padding: const EdgeInsets.only(
+                                      right: 5, left: 5, bottom: 10),
                                   child: GifGridItem(gifData: item),
                                 ),
                               ),
@@ -168,11 +159,14 @@ class _GiphyPageState extends State<GiphyPage> with SingleTickerProviderStateMix
                     ),
                     Expanded(
                       child: Padding(
-                        padding: const EdgeInsets.only(right:5, left:5, top:10),
+                        padding:
+                            const EdgeInsets.only(right: 5, left: 5, top: 10),
                         child: PagedGridView<int, dynamic>(
                           pagingController: _pagingControllerTrending,
-                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: orientation == Orientation.portrait ? 2 : 4,
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount:
+                                orientation == Orientation.portrait ? 2 : 4,
                             childAspectRatio: 1,
                           ),
                           builderDelegate: PagedChildBuilderDelegate<dynamic>(
